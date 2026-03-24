@@ -100,6 +100,7 @@
 \end{align}
 
 \section{図表の参照}
+\label{sec:ref}
 
 図や表を参照するには、\verb|\ref{}| コマンドを使用する：
 
@@ -108,3 +109,32 @@
   \item 表\ref{tb:example}のように表を参照
   \item 式(\ref{eq:example})のように数式を参照
 \end{itemize}
+
+より便利な自動参照コマンドも利用できる。
+自動参照コマンドは、「図」「表」「式」などの名前を自動で判定して表示する。
+
+\subsection{crefコマンド（推奨）}
+
+\verb|\cref{}| コマンドを使うと、図表の種類を自動判定して日本語で表示する：
+
+\begin{itemize}
+  \item 図：\cref{fig:example}のように図を参照
+  \item 表：\cref{tb:example}のように表を参照
+  \item 式：\cref{eq:example}のように数式を参照
+  \item 章：\cref{cha:Introduction}のように章を参照
+  \item 節：\cref{sec:ref}のように節を参照
+\end{itemize}
+
+\subsection{autorefコマンド}
+
+\verb|\autoref{}| コマンドも同様に使用できる：
+
+\begin{itemize}
+  \item 図：\autoref{fig:example}のように図を参照
+  \item 表：\autoref{tb:example}のように表を参照
+  \item 式：\autoref{eq:example}のように数式を参照
+  \item 章：\autoref{cha:Introduction}のように章を参照
+\end{itemize}
+
+\textbf{注意：}章や節の参照は、\verb|\cref| を使うと「3章」「3.1節」のように表示され、
+\verb|\autoref| では番号のみが表示される。より柔軟な表示が可能な \verb|\cref| の使用を推奨する。

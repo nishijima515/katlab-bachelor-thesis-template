@@ -50,6 +50,7 @@ Dev Container 環境下では Docker 関連のコマンドの操作は不要。
 
 ```
 chapters/
+├── 00-abstract.tex
 ├── 01-introduction.tex
 ├── 02-preparation.tex
 ├── 03-function.tex
@@ -78,19 +79,57 @@ make
 生成された PDF ファイルは、プロジェクトルートに `paper.pdf` として出力される。
 `make` または `make watch-chapters` コマンド実行時、chapters 内の変更を自動で監視する。
 
+### 3. 発表要旨の作成
+
+卒業研究発表要旨は `chapters/00-abstract.tex` に記述する。
+このファイルは `paper.tex` から概要として読み込まれるほか、単体でコンパイルして発表要旨 PDF を生成することもできる。
+
+```bash
+# 発表要旨のみの PDF を生成
+make abstract
+```
+
+生成した PDF ファイルは、プロジェクトルートに `abstract.pdf` として出力する。
+発表要旨のレイアウトには `packages/abstract.sty` を使用する。
+
+#### タイトル・発表者名の設定
+
+`chapters/00-abstract.tex` の先頭にある以下の箇所を編集する：
+
+```latex
+\setAbstractTitle{論文のタイトル}
+\setAbstractPresenter{発表者の氏名}
+```
+
+また、`\tool` マクロの定義もこのファイル内にあるため、ツール名を変更する場合は以下も合わせて編集する：
+
+```latex
+\newcommand{\tool}{ツール名}
+```
+
+> **注意:** `paper.tex` 側にも同名のマクロ定義（`\tool`、`\title`、`\author` 等）があるため、内容を変更する際は両方を合わせて更新すること。
+
+#### 仕組み
+
+`chapters/00-abstract.tex` は条件分岐により、以下の 2 つの用途で動作する：
+
+- **`paper.tex` から `\input` される場合**: `paper.tex` で `\tool` が既に定義済みであるため、プリアンブル部分がスキップされ、本文のみを読み込む。
+- **`make abstract` で単体コンパイルする場合**: `\tool` が未定義であるため、プリアンブル（`\documentclass`、パッケージ読み込み、マクロ定義等）が有効になり、発表要旨の PDF を生成する。
+
 ## 利用可能な Make コマンド
 
 ### LaTeX 関連コマンド
 
-| コマンド              | 説明                                           |
-| --------------------- | ---------------------------------------------- |
-| `make help`           | 利用可能なコマンド一覧を表示                   |
-| `make paper.pdf`      | paper.tex をコンパイルし、paper.pdf を生成     |
-| `make watch-chapters` | chapters/ 内のファイル変更を監視してコンパイル |
-| `make clean`          | LaTeX 中間ファイルを削除                       |
-| `make clean-all`      | すべての LaTeX 生成ファイルを削除              |
-| `make open-pdf`       | 生成された PDF を開く (Mac 用)                 |
-| `make kill-make`      | 既存の make プロセスを強制終了                 |
+| コマンド              | 説明                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| `make help`           | 利用可能なコマンド一覧を表示                                 |
+| `make paper.pdf`      | paper.tex をコンパイルし、paper.pdf を生成                   |
+| `make abstract`       | chapters/00-abstract.tex をコンパイルし、abstract.pdf を生成 |
+| `make watch-chapters` | chapters/ 内のファイル変更を監視してコンパイル               |
+| `make clean`          | LaTeX 中間ファイルを削除                                     |
+| `make clean-all`      | すべての LaTeX 生成ファイルを削除                            |
+| `make open-pdf`       | 生成された PDF を開く (Mac 用)                               |
+| `make kill-make`      | 既存の make プロセスを強制終了                               |
 
 ### Docker 関連コマンド
 
@@ -125,6 +164,7 @@ katlab-bachelor-thesis-template/
 ├── build/              # コンパイル中間ファイル
 │   └── *.aux, *.dvi, *.log など
 ├── chapters/           # 各章の TeX ソースファイル
+│   ├── 00-abstract.tex
 │   ├── 01-introduction.tex
 │   ├── 02-preparation.tex
 │   ├── 03-function.tex
@@ -146,6 +186,7 @@ katlab-bachelor-thesis-template/
 
 `paper.tex` は以下の構成で章を結合する：
 
+0. 概要 (`chapters/00-abstract.tex`)
 1. はじめに (`chapters/01-introduction.tex`)
 2. 研究の準備 (`chapters/02-preparation.tex`)
 3. 機能 (`chapters/03-function.tex`)
@@ -186,6 +227,7 @@ bash scripts/sync-template.sh
 4. 選択した方法で更新を取り込む
 
 **推奨事項：**
+
 - 作業ディレクトリに未コミットの変更がないことを確認してから実行すること
 - 更新を取り込む前に、必ず現在の作業をコミットしておくこと
 

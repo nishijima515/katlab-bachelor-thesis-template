@@ -1,8 +1,12 @@
-.PHONY: help build up down exec clean clean-all watch-chapters open-pdf setup dev restart rebuild stop logs paper.pdf kill-make
+.PHONY: help build up down exec clean clean-all watch-chapters open-pdf setup dev restart rebuild stop logs paper.pdf abstract kill-make
 
 # メインTeXファイル
 MAIN_TEX = paper.tex
 OUTPUT_PDF = paper.pdf
+
+# 概要TeXファイル
+ABSTRACT_TEX = chapters/00-abstract.tex
+ABSTRACT_PDF = abstract.pdf
 
 # 既存の監視スクリプトのみを終了（PIDファイルベース）
 define kill_watch_processes
@@ -46,9 +50,10 @@ else
 endif
 
 # 共通のコマンドを定義
-LATEX_CMD       = $(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8 latexmk -pdfdvi -outdir=build $(MAIN_TEX)"
-LATEX_CLEAN     = $(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && latexmk -c -outdir=build $(MAIN_TEX)"
-LATEX_CLEAN_ALL = $(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && latexmk -C -outdir=build $(MAIN_TEX)"
+LATEX_CMD          = $(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8 latexmk -pdfdvi -outdir=build $(MAIN_TEX)"
+LATEX_ABSTRACT_CMD = $(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8 latexmk -pdfdvi -outdir=build $(ABSTRACT_TEX)"
+LATEX_CLEAN        = $(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && latexmk -c -outdir=build $(MAIN_TEX)"
+LATEX_CLEAN_ALL    = $(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && latexmk -C -outdir=build $(MAIN_TEX)"
 
 # ファイル監視スクリプト（全環境対応）
 WATCH_CMD       = $(DOCKER_PREFIX) bash $(WORKSPACE_DIR)/scripts/watch.sh
@@ -83,6 +88,12 @@ paper.pdf: ## paper.tex をコンパイルし、paper.pdf を生成
 	@$(LATEX_CMD)
 	@$(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && if [ -f build/$(OUTPUT_PDF) ]; then cp build/$(OUTPUT_PDF) $(OUTPUT_PDF) && echo 'PDF copied to root: $(OUTPUT_PDF)'; fi"
 
+abstract: ## chapters/00-abstract.tex をコンパイルし、abstract.pdf を生成
+	@mkdir -p build
+	@echo "Compiling $(ABSTRACT_TEX)..."
+	@$(LATEX_ABSTRACT_CMD)
+	@$(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && if [ -f build/00-abstract.pdf ]; then cp build/00-abstract.pdf $(ABSTRACT_PDF) && echo 'PDF copied to root: $(ABSTRACT_PDF)'; fi"
+
 watch-chapters: ## chapters/ 内のファイル変更を監視してコンパイル
 	$(call kill_watch_processes)
 	@mkdir -p build
@@ -92,11 +103,14 @@ watch-chapters: ## chapters/ 内のファイル変更を監視してコンパイ
 clean: ## LaTeX 中間ファイルを削除
 	@echo "中間ファイル削除中..."
 	@$(LATEX_CLEAN)
+	@$(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && latexmk -c -outdir=build $(ABSTRACT_TEX)" 2>/dev/null || true
 
 clean-all: ## すべての LaTeX 生成ファイルを削除
 	@echo "生成ファイル完全削除中..."
 	@$(LATEX_CLEAN_ALL)
+	@$(DOCKER_PREFIX) bash -c "cd $(WORKSPACE_DIR) && latexmk -C -outdir=build $(ABSTRACT_TEX)" 2>/dev/null || true
 	@$(DOCKER_PREFIX) rm -rf build/*
+	@rm -f $(ABSTRACT_PDF)
 
 # ヘルパー関数: Docker環境チェック
 define check_docker_env

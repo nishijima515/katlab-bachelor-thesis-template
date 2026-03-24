@@ -71,9 +71,9 @@
 %
 % \preface{概要}
 % 概要 (修士のみ)
-% 
+%
 % 本文
-% 
+%
 % \end{document}
 %
 % 本文では以下の項目が使える。
@@ -133,6 +133,8 @@
 \def\advisor{\def\@advisor}
 %\def\cource{\def\@cource}
 \def\department{\def\@department}
+\def\studentNumber{\def\@studentNumber}  % 学籍番号用のマクロを追加
+\def\submitDate{\def\@submitDate}  % 提出日用のマクロを追加
 
 % 令和年度を自動計算
 \newcount\reiwaYear
@@ -230,15 +232,18 @@
 \begin{center}
 {\LARGE 令和 \@nendo 年度 卒業論文 \par}\vskip 2em minus 1em
 {\huge\textbf{\@title}\par}\vskip 20em minus 4em
-{\Large 指導教員 \hskip 1em \@advisor\par}\vskip 3em minus 2em
+% {\Large 指導教員 \hskip 1em \@advisor\par}\vskip 3em minus 2em
 %
 %
 %{\Large 宮崎大学 工学部 \par}\vskip 0.5em minus 0.5em
 %{\Large \@major \hskip 1em \@cource \par}\vskip 0.5em minus 0.5em
 %
 {\Large 宮崎大学 工学部 \@major \par}\vskip 0.5em minus 0.5em
-{\LARGE\textbf{\@author}\par}\vskip 6em minus 2em
-{\Large\textbf{\@date}}\vskip 4em minus 1em
+% {\LARGE\textbf{\@author}\par}\vskip 6em minus 2em
+% {\Large\textbf{\@date}}\vskip 4em minus 1em
+{\LARGE\textbf{\@studentNumber \hskip 1em \@author}\par}\vskip 6em minus 2em
+{\Large\textbf{\@submitDate}\par}\vskip 1em minus 0.5em
+{\Large 指導教員 \hskip 1em \@advisor\par}\vskip 3em minus 2em
 %{\Large\textbf{\@major}\par}\vskip 2em minus 1em
 %{\Large\textbf{\@department}\par}
 \end{center}
@@ -286,14 +291,14 @@
 \setcounter{page}{1}
 }
 
-\def\@makechapterhead#1{ \vspace*{50pt} { \parindent 0pt \raggedright 
- \ifnum \c@secnumdepth >\m@ne \font@c \@chapapp{\thechapter} \par 
- \vskip 20pt plus 10pt minus 10pt \fi \font@c \textbf{#1}\par 
+\def\@makechapterhead#1{ \vspace*{50pt} { \parindent 0pt \raggedright
+ \ifnum \c@secnumdepth >\m@ne \font@c \@chapapp{\thechapter} \par
+ \vskip 20pt plus 10pt minus 10pt \fi \font@c \textbf{#1}\par
  \nobreak \vskip 40pt plus 10pt minus 10pt }
 }
 
-\def\@makeschapterhead#1{ \vspace*{50pt} { \parindent 0pt \raggedright 
- \font@c \textbf{#1}\par 
+\def\@makeschapterhead#1{ \vspace*{50pt} { \parindent 0pt \raggedright
+ \font@c \textbf{#1}\par
  \nobreak \vskip 40pt plus 10pt minus 10pt } }
 
 \def\preface#1{\clearpage\typeout{#1}
@@ -304,11 +309,11 @@
  \@makeschapterhead{\textbf{#1}}
  \@afterheading}
 
-% 前書きを入れた方が良いのかな？ 
+% 前書きを入れた方が良いのかな？
 
 
 \def\chapter{\clearpage \thispagestyle{plain} \global\@topnum\z@
-\@afterindenttrue \secdef\@chapter\@schapter} 
+\@afterindenttrue \secdef\@chapter\@schapter}
 
 \def\acknowledgment{\chapter*{\@acknowledgmentname}
 \typeout{\@acknowledgmentname}\addcontentsline{toc}{chapter}{\@acknowledgmentname}
@@ -331,7 +336,7 @@
   \chaptermark{##1}
   \addtocontents{lof}{\protect\addvspace{10pt}}
   \addtocontents{lot}{\protect\addvspace{10pt}} \if@twocolumn
-  \@topnewpage[\@makechapterhead{##2}] 
+  \@topnewpage[\@makechapterhead{##2}]
   \else \@makechapterhead{##2}
   \@afterheading \fi}
 }
@@ -341,16 +346,16 @@
 % 箇条書
 %
 
-\def\labelenumi{\theenumi.} 
-\def\theenumi{\arabic{enumi}} 
-\def\labelenumii{(\theenumii)}
-\def\theenumii{\alph{enumii}}
+\def\labelenumi{\theenumi.}
+\def\theenumi{\arabic{enumi}}
+\def\labelenumii{\theenumii}
+\def\theenumii{(\alph{enumii})}
 \def\p@enumii{\theenumi}
 \def\labelenumiii{\theenumiii.}
 \def\theenumiii{\roman{enumiii}}
-\def\p@enumiii{\theenumi(\theenumii)}
+\def\p@enumiii{\theenumi\theenumii}
 \def\labelenumiv{\theenumiv.}
-\def\theenumiv{\Alph{enumiv}} 
+\def\theenumiv{\Alph{enumiv}}
 \def\p@enumiv{\p@enumiii\theenumiii}
 
 \def\labelitemi{$\bullet$}
@@ -358,8 +363,8 @@
 \def\labelitemiii{$\ast$}
 \def\labelitemiv{$\cdot$}
 
-\def\verse{\let\\=\@centercr 
- \list{}{\itemsep\z@ \itemindent -1.5em\listparindent \itemindent 
+\def\verse{\let\\=\@centercr
+ \list{}{\itemsep\z@ \itemindent -1.5em\listparindent \itemindent
  \rightmargin\leftmargin\advance\leftmargin 1.5em}\item[]}
 \let\endverse\endlist
 \def\quotation{\list{}{\listparindent 1.5em
@@ -381,10 +386,10 @@
  \else \newpage \fi \thispagestyle{empty}\c@page\z@}
 \def\endtitlepage{\if@restonecol\twocolumn \else \newpage \fi}
 
-\arraycolsep 5pt \tabcolsep 6pt \arrayrulewidth .4pt \doublerulesep 2pt 
-\tabbingsep \labelsep 
+\arraycolsep 5pt \tabcolsep 6pt \arrayrulewidth .4pt \doublerulesep 2pt
+\tabbingsep \labelsep
 \skip\@mpfootins = \skip\footins
-\fboxsep = 3pt \fboxrule = .4pt 
+\fboxsep = 3pt \fboxrule = .4pt
 
 \newcounter {countPart}
 \newcounter {countChapter}
@@ -403,17 +408,17 @@
 \def\thesubparagraph {\theparagraph.\arabic{subparagraph}}
 
 \def\part{\cleardoublepage \thispagestyle{plain} \if@twocolumn \onecolumn
-\@tempswatrue \else \@tempswafalse \fi \hbox{}\vfil \secdef\@part\@spart} 
+\@tempswatrue \else \@tempswafalse \fi \hbox{}\vfil \secdef\@part\@spart}
 
 \def\@part[#1]#2{\ifnum \c@secnumdepth >-2\relax \refstepcounter{part}
 \addcontentsline{toc}{part}{\thepart \hspace{1em}#1}\else
 \addcontentsline{toc}{part}{#1}\fi \markboth{}{}
 \@chaptermark{\@partapp{\thepart}\ #1}
  {\centering \ifnum \c@secnumdepth >-2\relax \LARGE\textbf{\@partapp{\thepart}} \par
-\vskip 20pt \fi \LARGE \textbf{#1}\par}\@endpart} 
-\def\@endpart{\vfil\newpage \if@twoside \hbox{} \thispagestyle{empty} 
- \newpage 
- \fi \if@tempswa \twocolumn \fi} 
+\vskip 20pt \fi \LARGE \textbf{#1}\par}\@endpart}
+\def\@endpart{\vfil\newpage \if@twoside \hbox{} \thispagestyle{empty}
+ \newpage
+ \fi \if@tempswa \twocolumn \fi}
 \def\@spart#1{{\centering \LARGE \textbf{#1}\par}\@endpart}
 
 \def\@pnumwidth{1.55em}
@@ -428,14 +433,14 @@
 \def\l@part#1#2{\addpenalty{-\@highpenalty}
  \addvspace{2.25em plus 1pt} \begingroup
  \@tempdima 3em \parindent \z@ \rightskip \@pnumwidth \parfillskip
--\@pnumwidth 
+-\@pnumwidth
  {\large \textbf{\leavevmode #1\hfil \hbox to\@pnumwidth{\hss #2}}}\par
  \nobreak \endgroup}
 
-\def\l@countChapter#1#2{\pagebreak[3] 
+\def\l@countChapter#1#2{\pagebreak[3]
  \vskip 1.0em plus 1pt \@tempdima 0em \begingroup
- \parindent \z@ \rightskip \@pnumwidth 
- \parfillskip -\@pnumwidth 
+ \parindent \z@ \rightskip \@pnumwidth
+ \parfillskip -\@pnumwidth
  {\leavevmode \advance\leftskip\@tempdima \hskip -\leftskip \textbf{#1}\nobreak\hfil
  \nobreak\hbox to\@pnumwidth{\hss \ttfamily #2}}\par % \ttfamilyは正確なフォントじゃないことに注意
 \endgroup}
@@ -481,11 +486,11 @@
 \def\endtheindex{\if@restonecol\onecolumn\else\clearpage\fi}
 \def\indexspace{\par \vskip 10pt plus 5pt minus 3pt\relax}
 
-\def\footnoterule{\kern-3\p@ 
- \hrule width .4\columnwidth 
- \kern 2.6\p@} 
-\@addtoreset{footnote}{chapter} 
-\long\def\@makefntext#1{\parindent 1em\noindent 
+\def\footnoterule{\kern-3\p@
+ \hrule width .4\columnwidth
+ \kern 2.6\p@}
+\@addtoreset{footnote}{chapter}
+\long\def\@makefntext#1{\parindent 1em\noindent
  \hbox to 1.8em{\hss$^{\@thefnmark}$}#1}
 
 
@@ -500,11 +505,18 @@
 \def\dbltopfraction{.7}
 \def\dblfloatpagefraction{.5}
 
+\def\@tabletype{table}
 \long\def\@makecaption#1#2{
- \vskip 10pt 
- \setbox\@tempboxa\hbox{#1: #2}
- \ifdim \wd\@tempboxa >\hsize #1: #2\par \else \hbox
-to\hsize{\hfil\box\@tempboxa\hfil} 
+ \ifx\@captype\@tabletype
+   % 表の場合：キャプションの後にスペース
+   \setbox\@tempboxa\hbox{#1: #2}
+   \ifdim \wd\@tempboxa >\hsize #1: #2\par \else \hbox to\hsize{\hfil\box\@tempboxa\hfil} \fi
+   \vskip 10pt
+ \else
+   % 図の場合：キャプションの前にスペース
+   \vskip 10pt
+   \setbox\@tempboxa\hbox{#1: #2}
+   \ifdim \wd\@tempboxa >\hsize #1: #2\par \else \hbox to\hsize{\hfil\box\@tempboxa\hfil} \fi
  \fi}
 
 
@@ -529,10 +541,10 @@ to\hsize{\hfil\box\@tempboxa\hfil}
 \@namedef{table*}{\@dblfloat{table}}
 \@namedef{endtable*}{\end@dblfloat}
 
-\mark{{}{}} 
+\mark{{}{}}
 
 \if@twoside \def\ps@headings{\let\@mkboth\markboth
-\def\@oddfoot{}\def\@evenfoot{}\def\@evenhead{\textrm{\thepage\hfil 
+\def\@oddfoot{}\def\@evenfoot{}\def\@evenhead{\textrm{\thepage\hfil
 \leftmark}}\def\@oddhead{\hbox{} \rightmark \hfil
 \textrm{\thepage}}\def\chaptermark##1{\markboth {{\ifnum \c@secnumdepth
 >\m@ne
@@ -552,11 +564,11 @@ to\hsize{\hfil\box\@tempboxa\hfil}
 \def\sectionmark##1{}\def\subsectionmark##1{}}
 
 
-\@addtoreset{equation}{chapter} 
+\@addtoreset{equation}{chapter}
 \def\theequation{\thechapter.\arabic{equation}}
 
 
-\ps@plain \pagenumbering{arabic} \onecolumn \if@twoside\else\raggedbottom\fi 
+\ps@plain \pagenumbering{arabic} \onecolumn \if@twoside\else\raggedbottom\fi
 
 \flushbottom
 
@@ -580,7 +592,7 @@ to\hsize{\hfil\box\@tempboxa\hfil}
 
 
 
-\newenvironment{itemize2}%  
+\newenvironment{itemize2}%
 {%
    \begin{list}{$\bullet$\ \ }% 見出し記号／直後の空白を調節
    {%
